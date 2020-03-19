@@ -1,7 +1,5 @@
 'use strict'
 const FormData = require('form-data')
-const axios = require('axios')
-const request = require('request')
 const fs = require('fs')
 const fontColor = require('./style')
 const ProgressBar = require('./progress')
