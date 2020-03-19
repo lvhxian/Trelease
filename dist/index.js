@@ -1,13 +1,5 @@
-# Trelease
-终端自动发布器v0.1.0版本
-
-具体操作如下
-```
-安装
-npm i trelease -D
-
-// upload.js
-const Upload = require('Trelease')
+/* eslint-disable no-new */
+const Upload = require('../src')
 const path = require('path')
 
 new Upload({
@@ -32,11 +24,11 @@ new Upload({
    */
   openConfirm: true,
   /**
-   * 部署模式 暂未更新
+   * 部署模式
    */
   deploy: {
     /**
-     * 部署类型 => 远端仓库, 支持又拍云, 七牛云, 后续更新腾讯, 阿里OSS
+     * 部署类型 => 远端仓库, 目前支持又拍云
      */
     type: 'UPYUN',
     /**
@@ -63,4 +55,3 @@ new Upload({
    */
   error: function (files) {}
 })
-```
