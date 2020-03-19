@@ -2,10 +2,14 @@
 终端自动发布器v0.1.0版本
 
 具体操作如下
-```
-安装
-npm i trelease -D
 
+安装
+```
+npm i trelease -D
+```
+
+新建upload文件 并且添加如下配置
+```
 // upload.js
 const Upload = require('Trelease')
 const path = require('path')
