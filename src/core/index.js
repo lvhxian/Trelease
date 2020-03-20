@@ -1,6 +1,8 @@
 'use strict'
 const FormData = require('form-data')
 const fs = require('fs')
+const spin = require('io-spin')
+const spinner = spin('等待上传中')
 const { log } = require('../utils/utils')
 const ProgressBar = require('./progress')
 const FsExtend = require('./fs-extend')
@@ -36,6 +38,7 @@ class Upload extends FsExtend {
     process.stdin.on('data', input => {
       if (this.uploading) return false
       input = input.toString().trim()
+      
       if (['Y', 'y', 'YES', 'yes'].indexOf(input) > -1) {
         this.uploading = true
         if (!this.remoteFilePath) {
@@ -63,7 +66,8 @@ class Upload extends FsExtend {
       exit && exit()
     }
     this.filesList = filesList
-    log("开始上传.....", "blue")
+    spinner.update("开始上传.....").start()
+    // log("开始上传.....", "blue")
     this.pb = new ProgressBar('上传进度')
     this.createUpload(this.filesList, (errorNum, finishNum) => {
       if (errorNum > 0) {
@@ -98,6 +102,7 @@ class Upload extends FsExtend {
         // 计算成功列表与失败列表总和， 调用回调函数
         if (finishLen + errorLen === totalLen) {
           cb & cb(errorLen, finishLen)
+          spinner.stop()
         }
       })
     })

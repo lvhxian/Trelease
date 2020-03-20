@@ -19,5 +19,8 @@
   "devDependencies": {
     "form-data": "^3.0.0",
     "single-line-log": "^1.1.2"
+  },
+  "dependencies": {
+    "io-spin": "^0.4.1"
   }
 }
