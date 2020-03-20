@@ -5,7 +5,7 @@
   "author": "codeToby",
   "main": "src/index.js",
   "scripts": {
-    "test": "node template/index.js"
+    "test": "node test/index.js"
   },
   "repository": {
     "type": "git",
