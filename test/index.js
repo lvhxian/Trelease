@@ -3,11 +3,10 @@ const Upload = require('../src')
 const path = require('path')
 
 new Upload({
-  isRemote: true, // 远端上传是否启用 -> 优先级最高
-  remoteAddress: '', // 上传远端地址
+  remoteAddress: 'http://127.0.0.1:12305/upload/save', // 上传远端地址
   filePath: path.resolve(__dirname, '../dist'), // 本地路径
-  remoteFilePath: '', // 上传服务器路径
-  openConfirm: true, // 是否打开上传前的提示
+  remoteFilePath: 'test-upload', // 上传服务器路径
+  openConfirm: false, // 是否打开上传前的提示
   /**
    * 第三方部署模式
    */

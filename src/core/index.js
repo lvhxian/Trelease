@@ -78,6 +78,7 @@ class Upload extends FsExtend {
         this.UploadSuccess(this.uploadFiles, this.client)
         log(`上传完成, 共计文件数: ${finishNum}`, 'green')
       }
+      spinner.stop()
       exit && exit()
     })
     
@@ -102,7 +103,6 @@ class Upload extends FsExtend {
         // 计算成功列表与失败列表总和， 调用回调函数
         if (finishLen + errorLen === totalLen) {
           cb & cb(errorLen, finishLen)
-          spinner.stop()
         }
       })
     })
@@ -115,19 +115,23 @@ class Upload extends FsExtend {
     const form = new FormData()
     form.append('file', fs.createReadStream(file.localFile), file.key)
     form.append('remoteFilePath', this.remoteFilePath)
-    // 仅支持二级目录
-    _resource[0].indexOf('.') === -1 && form.append('resource', _resource[0])
-    // 提交模块 => 判断是否使用远端上传
-    if (this.isRemote) {
-      form.submit(this.remoteAddress, function (err, response) {
-        if (err) {
-          log(`上传失败: ${file.localFile}`, "red")
-          cb({ err: true })
-        } else {
-          cb({ err: false, response: response.statusCode === 200 })
-        }
-      })
+    // 多级目录判断
+    if (_resource.length > 1) {
+      let _resourceSlice = _resource.slice()
+      _resourceSlice.pop() // 推出最后一项
+      form.append('resource', _resourceSlice.join('/')) // 最后以/分割目录
+    } else {
+      form.append('resource', _resource[0])
     }
+    // 模块提交
+    form.submit(this.remoteAddress, function (err, response) {
+      if (err) {
+        log(`上传失败: ${file.localFile}`, "red")
+        cb({ err: true })
+      } else {
+        cb({ err: false, response: response.statusCode === 200 })
+      }
+    })
   }
 }
 
