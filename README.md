@@ -1,5 +1,7 @@
-# Trelease
-终端自动发布器, 面向自动化发布, 解放双手
+# Trelease :seedling:
+:octocat: 终端自动发布器, 面向自动化发布, 解放双手 :muscle:
+
+:star: :star: 搭配 :dart: [Trelease-Node](https://github.com/codeTom97/Trelease-Node)食用效果更佳 :star: :star:
 
 具体操作如下
 
@@ -12,7 +14,6 @@ npm i trelease -D
 ```
 // upload.js
 const Upload = require('Trelease')
-const path = require('path')
 
 new Upload({
   /**
@@ -20,9 +21,9 @@ new Upload({
    */
   remoteAddress: '',
   /**
-   * 本地路径
+   * 本地路径 一般是你的dist
    */
-  filePath: path.resolve(__dirname, '../dist'),
+  filePath: "",
   /**
    * 上传服务器路径
    */
