@@ -1,6 +1,6 @@
 {
   "name": "trelease",
-  "version": "0.2.1-beta",
+  "version": "1.0.0",
   "description": "终端自动发布器",
   "author": "codeToby",
   "main": "src/index.js",
