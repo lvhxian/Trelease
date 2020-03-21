@@ -1,5 +1,5 @@
 # Trelease
-终端自动发布器v0.1.0版本
+终端自动发布器, 面向自动化发布, 解放双手
 
 具体操作如下
 
@@ -16,11 +16,7 @@ const path = require('path')
 
 new Upload({
   /**
-   * 远端上传是否启用 -> 优先级最高
-   */
-  isRemote: true,
-  /**
-   * 上传远端地址
+   * 上传远端地址 一旦选用优先级最大
    */
   remoteAddress: '',
   /**
