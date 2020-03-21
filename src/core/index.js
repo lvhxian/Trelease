@@ -31,7 +31,7 @@ class Upload extends FsExtend {
   confirm () {
     process.stdin.setEncoding('utf8')
     log(`请确认发布信息：`, 'grey')
-    log(`---是否启用远端上传：${this.isRemote ? '是' : '否'}`, 'yellow')
+    log(`---是否启用远端上传：${this.remoteAddress !== '' ? '是' : '否'}`, 'yellow')
     log(`---远端仓库：${this.remoteFilePath.replace('/dist', '')}`, this.remoteFilePath ? 'yellow' : 'red')
     log(`---本地文件夹路径：${this.filePath}`, 'yellow')
     log(`确认开始上传吗(N/y)？`, 'red')
