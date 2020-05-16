@@ -1,26 +1,26 @@
 {
-  "name": "trelease",
-  "version": "1.0.1",
-  "description": "终端自动发布器",
-  "author": "codeToby",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "node test/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/iTobys/Trelease.git"
-  },
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/iTobys/Trelease/issues"
-  },
-  "homepage": "https://github.com/iTobys/Trelease#readme",
-  "devDependencies": {
-    "form-data": "^3.0.0",
-    "single-line-log": "^1.1.2"
-  },
-  "dependencies": {
-    "io-spin": "^0.4.1"
-  }
+    "name": "trelease",
+    "version": "1.0.0",
+    "description": "终端自动发布器",
+    "author": "codeToby",
+    "main": "src/index.js",
+    "scripts": {
+        "test": "node test/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/iTobys/Trelease.git"
+    },
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/iTobys/Trelease/issues"
+    },
+    "homepage": "https://github.com/iTobys/Trelease#readme",
+    "devDependencies": {
+        "form-data": "^3.0.0",
+        "single-line-log": "^1.1.2"
+    },
+    "dependencies": {
+        "io-spin": "^0.4.1"
+    }
 }
