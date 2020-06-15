@@ -21,17 +21,7 @@ const init = () => {
             if (!confirm) {
                 create() // 调用初始化函数
             } else {
-                let option = {
-                    type: 'Alibaba',
-                    access: 'LTAI4GGLDah2Kqbzz3Bjo3Ww',
-                    password: 'kzHJSJarDB8BGfH95YAdixCNX1k5AU',
-                    bucket: 'lq-luodiye',
-                    filePath: 'C:/Users/Administrator/Desktop/Trelease/dist',
-                    region: 'oss-cn-hongkong'
-                };
-
-                const AliOss = require('./oss/Ali.oss') // 调用OSS包
-                new AliOss(option).init() // 实例化后执行初始化
+                SwitchOss(options)
             }
         })
     })
@@ -82,24 +72,31 @@ const create = () => {
     ]
 
     return new Promise((reslove, reject) => {
-        inquirer.prompt(promptList).then(option => {
-            switch (option.type) {
-                case ('Alibaba'):
-                    const AliOss = require('./oss/Ali.oss') // 调用OSS包
-                    new AliOss(option).upload() // 实例化后执行上传
-                    break;
-                case ('Tencent'):
-                    break;
-                case ('Qiniu'):
-                    break;
-                default:
-                    break;
-            }
-
+        inquirer.prompt(promptList).then(options => {
             // 处理结果
-            console.log(`您输入的配置: `, option)
+            console.log(`您输入的配置: `, options)
+            SwitchOss(options)
         })
     })
+}
+
+/**
+ * OSS仓库选择
+ * @param {*} option 
+ */
+const SwitchOss = (option) => {
+    switch (option.type) {
+        case ('Alibaba'):
+            const AliOss = require('./oss/Ali.oss') // 调用OSS包
+            new AliOss(option).upload() // 实例化后执行上传
+            break;
+        case ('Tencent'):
+            break;
+        case ('Qiniu'):
+            break;
+        default:
+            break;
+    }
 }
 
 module.exports = init()
