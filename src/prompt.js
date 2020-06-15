@@ -3,7 +3,6 @@
  */
 
 const inquirer = require('inquirer') // 交互式命令行
-const {} = require('./core'); // 调用核心库
 
 
 /**
