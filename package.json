@@ -3,9 +3,13 @@
     "version": "2.0.0",
     "description": "终端自动发布器",
     "author": "codeTom97",
-    "main": "src/index.js",
+    "main": "src/main.js",
     "scripts": {
-        "test": "node test/index.js"
+        "prompt": "node src/prompt.js"
+    },
+    "bin": {
+        "trelease": "./bin/cmd",
+        "tre": "./bin/cmd"
     },
     "repository": {
         "type": "git",
@@ -21,6 +25,8 @@
         "single-line-log": "^1.1.2"
     },
     "dependencies": {
+        "ali-oss": "^6.9.0",
+        "inquirer": "^7.1.0",
         "io-spin": "^0.4.1"
     }
 }
