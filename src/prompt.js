@@ -6,7 +6,7 @@ const inquirer = require('inquirer') // 交互式命令行
 
 
 /**
- * 初始化
+ * 初始化 优先检查package.json
  */
 const init = () => {
     const confirm = [{
