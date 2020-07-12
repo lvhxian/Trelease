@@ -1,32 +1,32 @@
 {
-    "name": "trelease",
-    "version": "2.0.0",
-    "description": "终端自动发布器",
-    "author": "codeTom97",
-    "main": "src/main.js",
-    "scripts": {
-        "prompt": "node src/prompt.js"
-    },
-    "bin": {
-        "trelease": "./bin/cmd",
-        "tre": "./bin/cmd"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/iTobys/Trelease.git"
-    },
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/iTobys/Trelease/issues"
-    },
-    "homepage": "https://github.com/iTobys/Trelease#readme",
-    "devDependencies": {
-        "form-data": "^3.0.0",
-        "single-line-log": "^1.1.2"
-    },
-    "dependencies": {
-        "ali-oss": "^6.9.0",
-        "inquirer": "^7.1.0",
-        "io-spin": "^0.4.1"
-    }
+	"name": "trelease",
+	"version": "2.1.0",
+	"description": "终端自动发布器",
+	"author": "codeTom97",
+	"main": "src/main.js",
+	"scripts": {
+		"prompt": "node src/prompt.js"
+	},
+	"bin": {
+		"trelease": "./bin/cmd",
+		"tre": "./bin/cmd"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/codeTom97/Trelease.git"
+	},
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/codeTom97/Trelease/issues"
+	},
+	"homepage": "https://github.com/codeTom97/Trelease#readme",
+	"devDependencies": {
+		"ali-oss": "^6.9.0",
+		"qiniu": "^7.3.2",
+		"io-spin": "^0.4.1",
+		"inquirer": "^7.1.0",
+		"chalk": "^4.1.0",
+		"form-data": "^3.0.0",
+		"single-line-log": "^1.1.2"
+	}
 }

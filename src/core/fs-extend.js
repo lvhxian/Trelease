@@ -4,6 +4,7 @@
  */
 
 const fs = require('fs')
+const path = require('path')
 
 class FsExtends {
     constructor({ filePath = "" }) {
@@ -35,7 +36,7 @@ class FsExtends {
                     this.getFileByDir(file, list)
                 } else {
                     list.push({
-                        key: this.remoteFilePath ? this.remoteFilePath : '' + file.slice(this.filePath.length),
+                        key: file.slice(this.filePath.length + 1), // 过滤文件开头/
                         localFile: file
                     })
                 }
@@ -57,6 +58,27 @@ class FsExtends {
      */
     isZip() {
         return this.filePath.indexOf('.zip') > -1
+    }
+
+    /**
+     * 写入配置项
+     * @param {*} options 
+     */
+    saveOptions (options) {
+        const packageFile = path.resolve('package.json');
+        let packageOptions = JSON.parse(fs.readFileSync(packageFile));
+        const { treleaseOptions = [] } = packageOptions;
+
+        // 先检查是否已经存在一样配置 一般判断bucket, access
+        let _filterOptions = treleaseOptions.filter(item => item.access !== options.access && item.bucket !== options.bucket);
+        
+        // 追加字段后 合并packageOptions并转义
+        _filterOptions.push({ ...options, flag: 1 });
+        packageOptions = JSON.stringify({ ...packageOptions, "treleaseOptions": _filterOptions }, null, "\t");
+
+        fs.writeFileSync(packageFile, packageOptions, (err) => {
+            console.log(err)
+        })
     }
 }
 
