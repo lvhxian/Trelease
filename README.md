@@ -28,7 +28,7 @@ trelease
     ....
     "treleaseOptions": [
         {
-            "type": "Alibaba", // 仓库类型，支持阿里云, 七牛云, 又拍云, 腾讯云(未实现)
+            "type": "AliYun|QiniuYun|UPYun", // 仓库类型，支持阿里云(AliYun), 七牛云, 又拍云, 腾讯云(未实现)
             "access": "", // AccessKey 账户
             "password": "", // AccessKeySecret 秘钥
             "bucket": "", // 目标仓库

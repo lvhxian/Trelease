@@ -1,6 +1,6 @@
 {
 	"name": "trelease",
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"description": "终端自动发布器",
 	"author": "codeTom97",
 	"main": "src/main.js",
