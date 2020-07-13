@@ -22,11 +22,12 @@
 	"homepage": "https://github.com/codeTom97/Trelease#readme",
 	"devDependencies": {
 		"ali-oss": "^6.9.0",
-		"qiniu": "^7.3.2",
-		"io-spin": "^0.4.1",
-		"inquirer": "^7.1.0",
 		"chalk": "^4.1.0",
 		"form-data": "^3.0.0",
-		"single-line-log": "^1.1.2"
+		"inquirer": "^7.1.0",
+		"io-spin": "^0.4.1",
+		"qiniu": "^7.3.2",
+		"single-line-log": "^1.1.2",
+		"upyun": "^3.4.4"
 	}
 }

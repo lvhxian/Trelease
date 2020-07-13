@@ -54,10 +54,11 @@ class FsExtends {
     }
 
     /**
-     * 判断是否为ZIP
+     * 文件地址转换为文件流
+     * @param {*} localFile 
      */
-    isZip() {
-        return this.filePath.indexOf('.zip') > -1
+    getFileStream (localFile) {
+        return fs.createReadStream(localFile)
     }
 
     /**

@@ -3,7 +3,9 @@
 
 :star: 2.0版本相比上一版本, 抽离引入配置文件, 全终端操作 :star:
 
-:star: :star: 搭配 :dart: [Trelease-Node](https://github.com/codeTom97/Trelease-Node)食用效果更佳 :star: :star:
+:star: :star: 搭配 :dart: [Trelease-Node](https://github.com/codeTom97/Trelease-Node)食用效果更佳(2.0需要再稍等一会) :star: :star:
+
+[x]
 
 具体操作如下
 
@@ -28,11 +30,11 @@ trelease
     ....
     "treleaseOptions": [
         {
-            "type": "Alibaba", // 仓库类型，支持阿里云, 七牛云, 腾讯云(未实现), 又拍云(未实现)
+            "type": "Alibaba", // 仓库类型，支持阿里云, 七牛云, 又拍云, 腾讯云(未实现)
             "access": "", // AccessKey 账户
-            "password": "1231", // AccessKeySecret 秘钥
-            "bucket": "ls-oss", // 目标仓库
-            "filePath": "C:/Desc" // 本地路径, 建议使用pwd获取
+            "password": "", // AccessKeySecret 秘钥
+            "bucket": "", // 目标仓库
+            "filePath": "" // 本地路径, 建议使用pwd获取
         }
     ]
 

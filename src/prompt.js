@@ -30,7 +30,7 @@ const check = () => {
         return new Promise((reslove, reject) => {
             inquirer.prompt(confirm).then(({ confirm }) => {
                 if (!confirm) {
-                    // create() // 调用初始化函数
+                    create() // 调用初始化函数
                 } else {
                     init(treleaseOptions)
                 }
@@ -76,16 +76,24 @@ const create = () => {
             choices: [
                 {
                     name: '阿里云',
-                    value: 'Alibaba'
+                    value: 'AliYun'
                 },
                 {
                     name: '腾讯云',
-                    value: 'Tencent'
+                    value: 'TxYun'
                 },
                 {
                     name: '七牛云',
-                    value: 'Qiniu'
-                },,
+                    value: 'QiniuYun'
+                },
+                {
+                    name: '又拍云',
+                    value: 'UPYun'
+                },
+                {
+                    name: '自定义服务器',
+                    value: 'Remote'
+                },
                 {
                     name: '待考虑',
                     value: 'Default'
@@ -95,17 +103,17 @@ const create = () => {
         {
             type: 'input',
             name: 'access',
-            message: '请输入OSS账号',
+            message: '请输入OSS账号(自定义服务器非必填)',
         },
         {
             type: 'password',
             name: 'password',
-            message: '请输入OSS密码',
+            message: '请输入OSS密码(自定义服务器非必填)',
         },
         {
             type: 'input',
             name: 'bucket',
-            message: '请输入OSS仓库',
+            message: '请输入OSS仓库(自定义服务器非必填)',
         },
         {
             type: 'input',
@@ -133,15 +141,22 @@ const create = () => {
  */
 const SwitchOss = (option) => {
     switch (option.type) {
-        case ('Alibaba'):
+        case ('AliYun'):
             const AliOss = require('./oss/Ali.oss') // 调用OSS包
             new AliOss(option).upload() // 实例化后执行上传
             break;
-        case ('Tencent'):
+        case ('TxYun'):
             break;
-        case ('Qiniu'):
+        case ('QiniuYun'):
             const Qiniu = require('./oss/Qiniu.oss') // 调用OSS包
             new Qiniu(option).upload() // 实例化后执行上传
+            break;
+        case ('UPYun'):
+            const UPYun = require('./oss/UPYun.oss') // 调用OSS包
+            new UPYun(option).upload() // 实例化后执行上传
+            break;
+        case ('Remote'):
+            log('blue', 'NOT FIND: 自定义服务器尚未开放, 敬请期待')
             break;
         default:
             log('red', 'ERROR: 你填写的服务商尚未添加, 请联系作者添加')

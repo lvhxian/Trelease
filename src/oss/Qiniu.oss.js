@@ -64,8 +64,10 @@ class QiniuOss extends FsExtends {
                 // 成功 + 失败等于上传目录既可以关闭进度
                 if (this.finishList.length + this.errorList.length === this.fileList.length) {
                     spinner.stop(); // 关闭进度条
-                    log('green', `上传完成: ${this.finishList.length}个`)
-                    log('red', `上传失败: ${this.errorList.join(',') || 0}个`)
+                    log('green', `上传完成: ${this.finishList.length}个`);
+                    log('red', `上传失败: ${this.errorList.join(',') || 0}个`);
+                    
+                    // 如开启保存, 则自动写入package.json
                     if (this.isSave) {
                         this.saveOptions(this.options)
                     }
