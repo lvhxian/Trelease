@@ -5,8 +5,6 @@
 
 :star: :star: 搭配 :dart: [Trelease-Node](https://github.com/codeTom97/Trelease-Node)食用效果更佳(2.0需要再稍等一会) :star: :star:
 
-[x]
-
 具体操作如下
 
 全局安装
