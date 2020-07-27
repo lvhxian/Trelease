@@ -72,9 +72,11 @@ class FsExtends {
 
         // 先检查是否已经存在一样配置 一般判断bucket, access
         let _filterOptions = treleaseOptions.filter(item => item.access !== options.access && item.bucket !== options.bucket);
+
+        delete options['isSave'] // 删除保存配置
         
         // 追加字段后 合并packageOptions并转义
-        _filterOptions.push({ ...options, flag: 1 });
+        _filterOptions.push({ ...options });
         packageOptions = JSON.stringify({ ...packageOptions, "treleaseOptions": _filterOptions }, null, "\t");
 
         fs.writeFileSync(packageFile, packageOptions, (err) => {

@@ -1,6 +1,6 @@
 {
 	"name": "trelease",
-	"version": "2.1.1",
+	"version": "2.1.3",
 	"description": "终端自动发布器",
 	"author": "codeTom97",
 	"main": "src/main.js",
@@ -20,7 +20,7 @@
 		"url": "https://github.com/codeTom97/Trelease/issues"
 	},
 	"homepage": "https://github.com/codeTom97/Trelease#readme",
-	"devDependencies": {
+	"dependencies": {
 		"ali-oss": "^6.9.0",
 		"chalk": "^4.1.0",
 		"form-data": "^3.0.0",

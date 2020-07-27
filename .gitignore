@@ -3,3 +3,5 @@ test
 dist
 template
 .env
+yarn.lock
+package-lock.json
