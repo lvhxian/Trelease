@@ -4,11 +4,8 @@
  */
 
 const OSS = require('upyun');
-const spin = require('io-spin')
 const FsExtends = require('../core/fs-extend');
-const { log } = require('../utils/log')
-
-const spinner = spin('等待上传中');
+const { log } = require('../utils/log');
 
 
 class UPYunOss extends FsExtends {
@@ -24,7 +21,7 @@ class UPYunOss extends FsExtends {
 
         this.fileList = []; // 待上传目录
         this.finishList = []; // 上传成功
-        this.errorList = []; // 上传失败
+        this.unfinishList = []; // 上传失败
 
         // 初始化七牛云所需要的全部凭证
         this.init();
@@ -43,26 +40,32 @@ class UPYunOss extends FsExtends {
      * @param {*} fileName 
      * @param {*} filePath 
      */
-    upload() {
-        spinner.update('开始上传....').start();
+    async upload() {
+        for(let i = 0; i < this.fileList.length; i++) {
+            const item = this.fileList[i];
 
-        this.fileList.forEach(async (item) => {
-            
-            const result =  await this.client.putFile(item.key, this.getFileStream(item.localFile)) // 又拍云需要把文件路径转换为Stream流
+            try {
+                const result =  await this.client.putFile(item.key, this.getFileStream(item.localFile)) // 又拍云需要把文件路径转换为Stream流
 
-            result ? this.finishList.push(item) : this.errorList.push(item);
-
-            if (this.finishList.length + this.errorList.length === this.fileList.length) {
-                spinner.stop(); // 关闭进度条
-                log('green', `上传完成: ${this.finishList.length}个`);
-                log('red', `上传失败: ${this.errorList.join(',') || 0}个`);
-                
-                // 如开启保存, 则自动写入package.json
-                if (this.isSave) {
-                    this.saveOptions(this.options)
-                }
+                result ? this.finishList.push(item) : this.unfinishList.push(item);
+    
+            } catch (err) {
+                log('red', err);
+                process.exit(); // 强制退出终端
             }
-        });
+        }
+                    
+        // 如开启保存, 则自动写入package.json
+        if (this.isSave) {
+            this.saveOptions(this.options)
+        }
+
+        return {
+            finish: this.finishList, 
+            finishLen: this.finishList.length,
+            unfinish: this.unfinishList,
+            unfinishLen: this.unfinishList.length,
+        }
     }
 }
 
