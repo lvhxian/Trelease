@@ -10,6 +10,9 @@ const chalk = require('chalk');
  * @param {*} text 文本
  */
 const log = (color, text) => {
+    if (typeof text == 'object') {
+        text = JSON.stringify(text);
+    }
     console.log(chalk[color](`---------------------------------------------------------\n ${text} \n--------------------------------------------------------- `))
 }
 

@@ -35,13 +35,35 @@ class FsExtends {
                 if (fs.statSync(file).isDirectory()) {
                     this.getFileByDir(file, list)
                 } else {
+                    const fileKey = file.slice(this.filePath.length + 1); // 过滤文件开头/
+
                     list.push({
-                        key: file.slice(this.filePath.length + 1), // 过滤文件开头/
-                        localFile: file
+                        key: fileKey, 
+                        localFile: file,
+                        resource: this.createResource(fileKey)
                     })
                 }
             }
         })
+    }
+
+    /**
+     * 根据目录地址生成目录结构
+     * @param {*} fileKey 刨除文件根路径后的文件目录
+     */
+    createResource(fileKey) {
+        let resourceArr = fileKey.split('/');
+        let resourceStr = "";
+
+        // 一级目录
+        if (resourceArr.length > 1) {
+            resourceArr.pop(); // 推出最后一项 一般为文件名
+            resourceStr = resourceArr.join('/')
+        } else {
+            resourceStr = '.'
+        }
+
+        return resourceStr
     }
 
     /**
@@ -69,9 +91,16 @@ class FsExtends {
         const packageFile = path.resolve('package.json');
         let packageOptions = JSON.parse(fs.readFileSync(packageFile));
         const { treleaseOptions = [] } = packageOptions;
+        
+        let _filterOptions = {};
 
-        // 先检查是否已经存在一样配置 一般判断bucket, access
-        let _filterOptions = treleaseOptions.filter(item => item.access !== options.access && item.bucket !== options.bucket);
+        if (options.type === 'Remote') {
+            // 自定义服务器则需要全拦截
+            _filterOptions = treleaseOptions.filter(item => item.url !== options.url && item.bucket !== options.bucket)
+        } else {
+            // OSS 一般判断bucket, access
+            _filterOptions = treleaseOptions.filter(item => item.access !== options.access && item.bucket !== options.bucket);
+        }
 
         delete options['isSave'] // 删除保存配置
         
