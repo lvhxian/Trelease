@@ -15,8 +15,16 @@ const { log } = require('./utils/log');
  * 初始化 优先检查package.json
  */
 const check = () => {
-    const packageOptions = fs.readFileSync(path.resolve('package.json'))
-    let { treleaseOptions = "" } = JSON.parse(packageOptions)
+    const packageFilePath = path.resolve('package.json');
+    const hasPackageFile = fs.existsSync(packageFilePath);
+    
+    if (!hasPackageFile) {
+        log('red', '请先执行npm init命令创建package.json');
+        process.exit();
+    }
+
+    const packageOptions = fs.readFileSync(packageFilePath);
+    let { treleaseOptions = "" } = JSON.parse(packageOptions);
 
     // 如果未配置, 跳过检查开始创建
     if (!treleaseOptions) {
@@ -45,10 +53,19 @@ const check = () => {
 // 初始化
 const init = (treleaseOptions) => {
     // 组装格式
-    let choicesList = treleaseOptions.map((item, index) => ({ 
-        name: `${index + 1}: 服务商:${item.type} - 仓库名:${item.bucket} - 本地路径:${item.filePath}`,
-        value: index
-    }));
+    let choicesList = treleaseOptions.map((item, index) => {
+        return item.type === 'Remote'
+            ?
+                {
+                    name: `${index + 1}: 服务商:${item.type} - 远端地址:${item.url} - 项目名:${item.bucket} - 本地路径:${item.filePath}`,
+                    value: index
+                }
+            :
+                {
+                    name: `${index + 1}: 服务商:${item.type} - 仓库名:${item.bucket} - 本地路径:${item.filePath}`,
+                    value: index
+                }
+    });
 
     const list = [
         {
@@ -62,9 +79,13 @@ const init = (treleaseOptions) => {
     return new Promise((reslove, reject) => {
         inquirer.prompt(list).then(async ({ index }) => {
             for (let i = 0, len = index.length; i < len; i++) {
-                await SwitchOss(treleaseOptions[index[i]]) // 调用OSS选择器 进行匹配
+                // 判断当前使用自定义还是远端
+                treleaseOptions[index[i]].type == 'Remote'
+                    ? await remote(treleaseOptions[index[i]])
+                    : await switchOSS(treleaseOptions[index[i]]);
             }
-            process.exit() // 遍历结束后 关闭终端
+
+            process.exit(); // 遍历结束后 关闭终端
         })
     })
 }
@@ -108,26 +129,43 @@ const create = () => {
         },
         {
             type: 'input',
+            name: 'url',
+            message: '请输入远端上传的接口或者地址',
+            when: ({ type }) => {
+                return type == 'Remote'
+            }
+        },
+        {
+            type: 'input',
+            name: 'bucket',
+            message: '请输入生成在远端项目名',
+            default: 'Trelease_Project',
+            when: ({ type }) => {
+                return type == 'Remote'
+            }
+        },
+        {
+            type: 'input',
             name: 'access',
             message: '请输入OSS账号',
-            when: (options) => {
-                return !['Remote', 'Exit'].includes(options.type)
+            when: ({ type }) => {
+                return !['Remote', 'Exit'].includes(type)
             }
         },
         {
             type: 'password',
             name: 'password',
             message: '请输入OSS密码',
-            when: (options) => {
-                return !['Remote', 'Exit'].includes(options.type)
+            when: ({ type }) => {
+                return !['Remote', 'Exit'].includes(type)
             }
         },
         {
             type: 'input',
             name: 'bucket',
             message: '请输入OSS仓库',
-            when: (options) => {
-                return !['Remote', 'Exit'].includes(options.type)
+            when: ({ type }) => {
+                return !['Remote', 'Exit'].includes(type)
             }
         },
         {
@@ -135,24 +173,24 @@ const create = () => {
             name: 'region',
             message: '请输入OSS所在区域(默认使用杭州)',
             Exit: 'oss-cn-hangzhou',
-            when: (options) => {
-                return options.type == 'AliYun'
+            when: ({ type }) => {
+                return type == 'AliYun'
             }
         },
         {
             type: 'input',
             name: 'filePath',
             message: '请输入你要上传目录的完整地址',
-            when: (options) => {
-                return !['Exit'].includes(options.type)
+            when: ({ type }) => {
+                return !['Exit'].includes(type)
             }
         },
         {
             type: 'confirm',
             name: 'isSave',
             message: '上传成功后是否保存配置',
-            when: (options) => {
-                return !['Exit'].includes(options.type)
+            when: ({ type }) => {
+                return !['Exit'].includes(type)
             }
         }
     ]
@@ -162,9 +200,9 @@ const create = () => {
             if (options.type === 'Exit') {
                 process.exit();
             } else if (options.type === 'Remote') {
-                log('red', '自定义服务器需要再等一丢丢')
+                remote(options);
             } else {
-                SwitchOss(options)
+                switchOSS(options);
             }
         })
     })
@@ -172,37 +210,49 @@ const create = () => {
 
 /**
  * OSS仓库选择
- * @param {*} option 
+ * @param {*} options 选项配置
  */
-const SwitchOss = async (option) => {
+const switchOSS = async (options) => {
     let result;
-    spinner.update(`开始上传至${option.type}........`).start()
+    spinner.update(`开始上传至${options.type}........`).start()
 
-    switch (option.type) {
+    switch (options.type) {
         case ('AliYun'):
             const AliOss = require('./oss/Ali.oss') // 调用OSS包
-            result = await new AliOss(option).upload() // 实例化后执行上传
+            result = await new AliOss(options).upload() // 实例化后执行上传
             spinner.stop(); // 先停止加载
-            log('blue', `${option.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
+            log('blue', `${options.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
             break;
         case ('TxYun'):
             break;
         case ('QiniuYun'):
             const Qiniu = require('./oss/Qiniu.oss') // 调用OSS包
-            result = await new Qiniu(option).upload() // 实例化后执行上传
+            result = await new Qiniu(options).upload() // 实例化后执行上传
             spinner.stop(); // 先停止加载
-            log('blue', `${option.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
+            log('blue', `${options.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
             break;
         case ('UPYun'):
             const UPYunOSS = require('./oss/UPYun.oss'); // 调用OSS包
-            result = await new UPYunOSS(option).upload();
+            result = await new UPYunOSS(options).upload();
             spinner.stop(); // 先停止加载
-            log('blue', ` ${option.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
+            log('blue', ` ${options.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
             break;
         default:
             log('red', 'ERROR: 你填写的服务商尚未添加, 请联系作者添加')
             break;
     }
+}
+
+/**
+ * 远端服务器推送
+ * @param {*} options 
+ */
+const remote = async (options) => {
+    spinner.update(`开始上传至自定义服务器........`).start();
+    const RemoteOss = require('./oss/Remote.oss');
+    result = await new RemoteOss(options).upload(); // 实例化后执行上传
+    spinner.stop(); // 先停止加载
+    log('blue', `${options.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
 }
 
 module.exports = check()
