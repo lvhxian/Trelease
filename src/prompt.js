@@ -4,10 +4,13 @@
 
 const path = require('path');
 const fs = require('fs');
-const spin = require('io-spin');
-const spinner = spin('等待上传中');
+// const spin = require('io-spin');
+// const spinner = spin('等待上传中');
+const Slog = require('./core/progress');
 
 const inquirer = require('inquirer'); // 交互式命令行
+
+const Main = require('./main'); // 主函数
 
 const { log } = require('./utils/log');
 
@@ -72,20 +75,21 @@ const init = (treleaseOptions) => {
             type: 'checkbox',
             name: 'index',
             message: "请选择你本地配置的仓库项",
-            choices: choicesList
+            choices: choicesList,
+            pageSize: 10 // 展示10项
         }
     ];
 
     return new Promise((reslove, reject) => {
         inquirer.prompt(list).then(async ({ index }) => {
-            for (let i = 0, len = index.length; i < len; i++) {
-                // 判断当前使用自定义还是远端
-                treleaseOptions[index[i]].type == 'Remote'
-                    ? await remote(treleaseOptions[index[i]])
-                    : await switchOSS(treleaseOptions[index[i]]);
-            }
+            const choiceList = [];
 
-            process.exit(); // 遍历结束后 关闭终端
+            // 遍历获取配置项
+            index.forEach(num => {
+                choiceList.push(treleaseOptions[num]);
+            })
+
+            await new Main(choiceList); // 调用主函数
         })
     })
 }
@@ -199,60 +203,11 @@ const create = () => {
         inquirer.prompt(promptList).then(options => {
             if (options.type === 'Exit') {
                 process.exit();
-            } else if (options.type === 'Remote') {
-                remote(options);
             } else {
-                switchOSS(options);
+                await new Main(options);
             }
         })
     })
-}
-
-/**
- * OSS仓库选择
- * @param {*} options 选项配置
- */
-const switchOSS = async (options) => {
-    let result;
-    spinner.update(`开始上传至${options.type}........`).start()
-
-    switch (options.type) {
-        case ('AliYun'):
-            const AliOss = require('./oss/Ali.oss') // 调用OSS包
-            result = await new AliOss(options).upload() // 实例化后执行上传
-            spinner.stop(); // 先停止加载
-            log('blue', `${options.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
-            break;
-        case ('TxYun'):
-            break;
-        case ('QiniuYun'):
-            const Qiniu = require('./oss/Qiniu.oss') // 调用OSS包
-            result = await new Qiniu(options).upload() // 实例化后执行上传
-            spinner.stop(); // 先停止加载
-            log('blue', `${options.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
-            break;
-        case ('UPYun'):
-            const UPYunOSS = require('./oss/UPYun.oss'); // 调用OSS包
-            result = await new UPYunOSS(options).upload();
-            spinner.stop(); // 先停止加载
-            log('blue', ` ${options.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
-            break;
-        default:
-            log('red', 'ERROR: 你填写的服务商尚未添加, 请联系作者添加')
-            break;
-    }
-}
-
-/**
- * 远端服务器推送
- * @param {*} options 
- */
-const remote = async (options) => {
-    spinner.update(`开始上传至自定义服务器........`).start();
-    const RemoteOss = require('./oss/Remote.oss');
-    result = await new RemoteOss(options).upload(); // 实例化后执行上传
-    spinner.stop(); // 先停止加载
-    log('blue', `${options.bucket}已执行完成, 信息如下：\n ✔️  ${result.finishLen}个\n ❌ ${result.unfinishLen}个`);
 }
 
 module.exports = check()

@@ -6,11 +6,12 @@
 const FormData = require('form-data');
 const FsExtends = require('../core/fs-extend');
 const { log } = require('../utils/log');
+const Slog = require('../core/progress');
 
 
 class RemoteOss extends FsExtends {
     constructor(options = {}) {
-        super({ filePath: options.filePath || '' });
+        super();
         
         this.remoteUrl = options.url; // 上传地址
         this.bucket = options.bucket || ''; // 远端项目
@@ -19,18 +20,20 @@ class RemoteOss extends FsExtends {
 
         this.options = options; // 缓存配置
 
-        this.fileList = []; // 待上传目录
+        this.fileList = options.filesList; // 待上传目录
         this.finishList = []; // 上传成功
         this.unfinishList = []; // 上传失败
 
-        this.init()
+        this.pb = new Slog(`正在上传至${options.bucket}`, this.fileList.length); // 初始化进度条
+
+        this.init();
     }
 
     /**
      * 初始化
      */
     init () {
-        this.fileList = this.getFileList();
+        // TODO
     }
 
     /**
@@ -45,13 +48,16 @@ class RemoteOss extends FsExtends {
                 
                 code === 200 ? this.finishList.push(fileItem) : this.unfinishList.push(fileItem);
 
+                this.pb.render({ completed: this.finishList.length, total: len }); // 进度条记录
+
             } catch (err) {
-                log('red', err);
+                log('red', JSON.stringify(err));
+                process.exit();
             }
         }
 
         if (this.isSave) {
-            this.saveOptions(this.options)
+            this.saveOptions(this.options);
         }
 
         return {

@@ -6,11 +6,12 @@
 const OSS = require('ali-oss');
 const FsExtends = require('../core/fs-extend');
 const { log } = require('../utils/log');
+const Slog = require('../core/progress');
 
 
 class AliOss extends FsExtends {
     constructor(options) {
-        super({ filePath: options.filePath || '' }); // 继承文件系统的操作
+        super(); // 继承文件系统的操作
 
         this.accessKeyId = options.access || '';
         this.accessKeySecret = options.password || '';
@@ -20,9 +21,11 @@ class AliOss extends FsExtends {
         this.isSave = options.isSave || false; // 是否写入package.json
         this.options = options; // 全部配置文件
 
-        this.fileList = []; // 待上传目录
+        this.fileList = options.filesList; // 待上传目录
         this.finishList = []; // 上传成功
         this.unfinishList = []; // 上传失败
+
+        this.pb = new Slog(`正在上传至${options.bucket}`, this.fileList.length); // 初始化进度条
 
         this.init();
     }
@@ -96,14 +99,16 @@ class AliOss extends FsExtends {
     
                 res.statusCode === 200 ? this.finishList.push(item) : this.unfinishList.push(item);
 
+                this.pb.render({ completed: this.finishList.length, total: len }); // 进度条记录
+
             } catch (error) {
-                log('red', error);
+                log('red', JSON.stringify(error));
                 process.exit(); // 强制退出终端
             }
         }
         
         if (this.isSave) {
-            this.saveOptions(this.options)
+            this.saveOptions(this.options);
         }
 
         return {

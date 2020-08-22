@@ -7,17 +7,25 @@ const fs = require('fs')
 const path = require('path')
 
 class FsExtends {
-    constructor({ filePath = "" }) {
-        this.filePath = filePath // 文件路径
+    constructor(options) {
+        if (options && options.filePath) {
+            this.filePath = filePath // 文件路径
+        }
     }
 
     /**
      * 获取文件列表
-     * @param {*} callback 回调
+     * @param {*} filePath 文件地址, 可通过外部传递
      */
-    getFileList(callback) {
-        let filesList = []
-        this.getFileByDir(this.filePath, filesList)
+    getFileList(filePath) {
+        let filesList = [];
+
+        if (filePath) {
+            this.filePath = filePath;
+        }
+
+        this.getFileByDir(this.filePath, filesList);
+
         return filesList
     }
 
