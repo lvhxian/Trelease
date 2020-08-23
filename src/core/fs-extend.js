@@ -4,20 +4,44 @@
  */
 
 const fs = require('fs')
-const path = require('path')
+const path = require('path');
 
 class FsExtends {
-    constructor({ filePath = "" }) {
-        this.filePath = filePath // 文件路径
+    constructor(options) {
+        if (options && options.filePath) {
+            this.filePath = filePath // 文件路径
+        }
+    }
+
+    /**
+     * 检查文件路径是否真实
+     * @param {*} filePath 
+     */
+    isExist(filePath) {
+        return fs.existsSync(filePath);
     }
 
     /**
      * 获取文件列表
-     * @param {*} callback 回调
+     * @param {*} filePath 文件地址, 可通过外部传递
      */
-    getFileList(callback) {
-        let filesList = []
-        this.getFileByDir(this.filePath, filesList)
+    getFileList(filePath) {
+        if (filePath) {
+            this.filePath = filePath;
+        }
+
+        let filesList = [];
+        const isDir = fs.statSync(this.filePath).isDirectory();
+
+        // 判断地址是否文件夹
+        if (isDir) {
+            this.getFileByDir(this.filePath, filesList);
+        } else {
+            const fileInfo = this.getFileByInfo(this.filePath, false);
+            filesList.push(fileInfo);
+        }
+
+
         return filesList
     }
 
@@ -35,16 +59,36 @@ class FsExtends {
                 if (fs.statSync(file).isDirectory()) {
                     this.getFileByDir(file, list)
                 } else {
-                    const fileKey = file.slice(this.filePath.length + 1); // 过滤文件开头/
-
-                    list.push({
-                        key: fileKey, 
-                        localFile: file,
-                        resource: this.createResource(fileKey)
-                    })
+                    const fileInfo = this.getFileByInfo(file, true); // 获取单文件基本信息
+                    list.push(fileInfo);
                 }
             }
         })
+    }
+
+    /**
+     * 组装单文件数据结构
+     * @param {*} filePath  文件地址
+     * @param {*} loop 是否循环 => 区分单文件与目录文件
+     */
+    getFileByInfo(filePath, loop = false) {
+        let fileKey;
+
+        if (loop) {
+            fileKey = filePath.slice(this.filePath.length + 1); // 过滤文件开头/
+        } else {
+            const _fileKeyArr = filePath.split('/');
+            fileKey = _fileKeyArr[_fileKeyArr.length - 1]; // 获取地址最后的文件名
+        }
+
+        const fileInfo = Object.create({});
+        
+        // 组装文件信息
+        fileInfo.key = fileKey;
+        fileInfo.localFile = filePath;
+        fileInfo.resource = this.createResource(fileKey); // 获取文件所在的目录结构
+
+        return fileInfo;
     }
 
     /**
@@ -103,6 +147,7 @@ class FsExtends {
         }
 
         delete options['isSave'] // 删除保存配置
+        delete options['filesList'] // 删除文件列表
         
         // 追加字段后 合并packageOptions并转义
         _filterOptions.push({ ...options });
