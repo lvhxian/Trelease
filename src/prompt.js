@@ -176,7 +176,7 @@ const create = () => {
             type: 'input',
             name: 'region',
             message: '请输入OSS所在区域(默认使用杭州)',
-            Exit: 'oss-cn-hangzhou',
+            default: 'oss-cn-hangzhou',
             when: ({ type }) => {
                 return type == 'AliYun'
             }
@@ -200,14 +200,10 @@ const create = () => {
     ]
 
     return new Promise((reslove, reject) => {
-        inquirer.prompt(promptList).then(options => {
-            if (options.type === 'Exit') {
-                process.exit();
-            } else {
-                await new Main(options);
-            }
+        inquirer.prompt(promptList).then(async options => {
+            options.type  !== 'Exit' ? await new Main([options]) : process.exit();
         })
     })
 }
 
-module.exports = check()
+module.exports = check();

@@ -16,7 +16,7 @@ class AliOss extends FsExtends {
         this.accessKeyId = options.access || '';
         this.accessKeySecret = options.password || '';
         this.bucket = options.bucket || '';
-        this.region = options.region || ''; // 仓库归属区域, 用getBucketInfo获取
+        this.region = options.region || ''; // 仓库归属区域
 
         this.isSave = options.isSave || false; // 是否写入package.json
         this.options = options; // 全部配置文件
@@ -34,9 +34,6 @@ class AliOss extends FsExtends {
      * 实例化仓库
      */
     async init() {
-        // 获取文件列表
-        this.fileList = this.getFileList();
-
         // 初始化OSS SDK
         this.client = new OSS({
             accessKeyId: this.accessKeyId,
@@ -91,7 +88,7 @@ class AliOss extends FsExtends {
             process.exit(); // 强制退出终端
         }
         
-        for (let i = 0; i < this.fileList.length; i++) {
+        for (let i = 0, len = this.fileList.length; i < len; i++) {
             const item = this.fileList[i];
 
             try {

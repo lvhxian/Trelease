@@ -32,6 +32,8 @@ class ProgressBar {
     // 生成终端文本
     let cmdText = `${this.description}: [  ${completed}/${total} ${cell +''+ empty} ${(100 * percent).toFixed(2)}%  ] \n`
 
+    log.clear();
+
     log(cmdText);
   }
 }

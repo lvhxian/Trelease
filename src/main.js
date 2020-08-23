@@ -23,7 +23,15 @@ class Main extends FsExtends {
 
     async init() {
         for(let i = 0, len = this.choiceList.length; i < len; i++) {
+            
             const choiceItem = this.choiceList[i];
+
+             // 检查文件路径是否存在
+            if (!this.isExist(choiceItem.filePath)) {
+                this.render('red', '文件路径不存在, 请重新填写');
+                process.exit();
+            }
+
             let cacheFile = this.cacheFilePath[choiceItem.filePath];
 
             // 判断是否已缓存文件列表
@@ -46,7 +54,7 @@ class Main extends FsExtends {
             case ('AliYun'):
                 const { finishLen: AliFinishLen, unfinishLen: AliUnfinishLen } = await new Ali(options).upload();
 
-                this.render('white', { bucket: options.bucket, finish: AliFinishLen, unfinish: AliUnfinishLen }); // 生成上传信息
+                this.renderFinishInfo('white', { bucket: options.bucket, finish: AliFinishLen, unfinish: AliUnfinishLen }); // 生成上传信息
 
                 break;
             case ('TxYun'):
@@ -54,13 +62,13 @@ class Main extends FsExtends {
             case ('QiniuYun'):
                 const { finishLen: QiniuFinishLen, unfinishLen: QiniuUnfinishLen } = await new Qiniu(options).upload();
 
-                this.render('white', { bucket: options.bucket, finish: QiniuFinishLen, unfinish: QiniuUnfinishLen }); // 生成上传信息
+                this.renderFinishInfo('white', { bucket: options.bucket, finish: QiniuFinishLen, unfinish: QiniuUnfinishLen }); // 生成上传信息
     
                 break;
             case ('UPYun'):
                 const { finishLen: UPYunFinishLen, unfinishLen: UPYunUnfinishLen } = await new UPYun(options).upload();
 
-                this.render('white', { bucket: options.bucket, finish: UPYunFinishLen, unfinish: UPYunUnfinishLen }); // 生成上传信息
+                this.renderFinishInfo('white', { bucket: options.bucket, finish: UPYunFinishLen, unfinish: UPYunUnfinishLen }); // 生成上传信息
 
                 break;
             default:
@@ -76,16 +84,25 @@ class Main extends FsExtends {
     async putRemote(options) {
         const { finishLen: RemoteFinishLen, unfinishLen: RemoteUnfinishLen } = await new Remote(options).upload();
 
-        this.render('white', { bucket: options.bucket, finish: RemoteFinishLen, unfinish: RemoteUnfinishLen }); // 生成上传信息
+        this.renderFinishInfo('white', { bucket: options.bucket, finish: RemoteFinishLen, unfinish: RemoteUnfinishLen }); // 生成上传信息
+    }
+
+    /**
+     * 生成上传完毕提示信息
+     * @param {*} color 颜色
+     * @param {*} param { 仓库名, 完成数, 未完成数 }
+     */
+    renderFinishInfo(color, { bucket, finish, unfinish }) {
+        this.render(color, `${bucket}已执行完成, 信息如下：\n ✔️  ${finish}个\n ❌ ${unfinish}个`)
     }
 
     /**
      * 生成提示
-     * @param {*} color 
-     * @param {*} param1 
+     * @param {*} color 颜色
+     * @param {*} text 文本
      */
-    render(color, { bucket, finish, unfinish }) {
-        log(color, `${bucket}已执行完成, 信息如下：\n ✔️  ${finish}个\n ❌ ${unfinish}个`);
+    render(color, text) {
+        log(color, text);
     }
 }
 
