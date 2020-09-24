@@ -3,9 +3,11 @@
  * @author codeTom97
  */
 
+const logSymbols = require("log-symbols");
+const chalk = require("chalk");
 const FsExtends = require("./core/fs-extend");
-const { Ali, Qiniu, UPYun, Remote } = require('./oss');
-const { log } = require('./utils/log');
+const { Ali, Qiniu, UPYun, Remote } = require("./oss");
+const { log } = require("./utils/log");
 
 class Main extends FsExtends {
     // 1. 读取prompt配置好的相关数据
@@ -22,13 +24,12 @@ class Main extends FsExtends {
     }
 
     async init() {
-        for(let i = 0, len = this.choiceList.length; i < len; i++) {
-            
+        for (let i = 0, len = this.choiceList.length; i < len; i++) {
             const choiceItem = this.choiceList[i];
 
-             // 检查文件路径是否存在
+            // 检查文件路径是否存在
             if (!this.isExist(choiceItem.filePath)) {
-                this.render('red', '文件路径不存在, 请重新填写');
+                log("red", "ERROR: 文件路径不存在, 请重新填写");
                 process.exit();
             }
 
@@ -41,7 +42,7 @@ class Main extends FsExtends {
 
             choiceItem.filesList = this.cacheFilePath[choiceItem.filePath];
 
-            choiceItem.type == 'Remote' ? await this.putRemote(choiceItem) : await this.putOSS(choiceItem);
+            choiceItem.type == "Remote" ? await this.putRemote(choiceItem) : await this.putOSS(choiceItem);
         }
     }
 
@@ -51,32 +52,32 @@ class Main extends FsExtends {
      */
     async putOSS(options) {
         switch (options.type) {
-            case ('AliYun'):
+            case "AliYun":
                 const { finishLen: AliFinishLen, unfinishLen: AliUnfinishLen } = await new Ali(options).upload();
 
-                this.renderFinishInfo('white', { bucket: options.bucket, finish: AliFinishLen, unfinish: AliUnfinishLen }); // 生成上传信息
+                this.renderFinishInfo({ bucket: options.bucket, finish: AliFinishLen, unfinish: AliUnfinishLen }); // 生成上传信息
 
                 break;
-            case ('TxYun'):
+            case "TxYun":
                 break;
-            case ('QiniuYun'):
+            case "QiniuYun":
                 const { finishLen: QiniuFinishLen, unfinishLen: QiniuUnfinishLen } = await new Qiniu(options).upload();
 
-                this.renderFinishInfo('white', { bucket: options.bucket, finish: QiniuFinishLen, unfinish: QiniuUnfinishLen }); // 生成上传信息
-    
+                this.renderFinishInfo({ bucket: options.bucket, finish: QiniuFinishLen, unfinish: QiniuUnfinishLen }); // 生成上传信息
+
                 break;
-            case ('UPYun'):
+            case "UPYun":
                 const { finishLen: UPYunFinishLen, unfinishLen: UPYunUnfinishLen } = await new UPYun(options).upload();
 
-                this.renderFinishInfo('white', { bucket: options.bucket, finish: UPYunFinishLen, unfinish: UPYunUnfinishLen }); // 生成上传信息
+                this.renderFinishInfo({ bucket: options.bucket, finish: UPYunFinishLen, unfinish: UPYunUnfinishLen }); // 生成上传信息
 
                 break;
             default:
-                log('error', 'ERROR: 你填写的服务商尚未添加, 请联系作者添加')
+                log("red", "ERROR: 你填写的服务商尚未添加, 请联系作者添加");
                 break;
         }
     }
-    
+
     /**
      * 自定义服务器上传
      * @param {*} options 自定义服务器配置
@@ -84,27 +85,26 @@ class Main extends FsExtends {
     async putRemote(options) {
         const { finishLen: RemoteFinishLen, unfinishLen: RemoteUnfinishLen } = await new Remote(options).upload();
 
-        this.renderFinishInfo('white', { bucket: options.bucket, finish: RemoteFinishLen, unfinish: RemoteUnfinishLen }); // 生成上传信息
+        this.renderFinishInfo({ bucket: options.bucket, finish: RemoteFinishLen, unfinish: RemoteUnfinishLen }); // 生成上传信息
     }
 
     /**
-     * 生成上传完毕提示信息
-     * @param {*} color 颜色
+     * 成功提示
      * @param {*} param { 仓库名, 完成数, 未完成数 }
      */
-    renderFinishInfo(color, { bucket, finish, unfinish }) {
-        this.render(color, `${bucket}已执行完成, 信息如下：\n ✔️  ${finish}个\n ❌ ${unfinish}个`)
+    renderFinishInfo({ bucket, finish, unfinish }) {
+        console.log(logSymbols.info, chalk.white(`${bucket}已执行完成, 信息如下: `));
+        console.log(logSymbols.success, chalk.green(`success: ${finish}个`));
+        console.log(logSymbols.error, chalk.red(`fail: ${unfinish}个`));
     }
 
     /**
-     * 生成提示
-     * @param {*} color 颜色
-     * @param {*} text 文本
+     * 错误提示
+     * @param {*} errText
      */
-    render(color, text) {
-        log(color, text);
+    renderFailInfo(errText) {
+        console.log(logSymbols.error, chalk.red(`Error: ${errText}`));
     }
 }
-
 
 module.exports = Main;
