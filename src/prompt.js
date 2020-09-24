@@ -4,9 +4,6 @@
 
 const path = require('path');
 const fs = require('fs');
-// const spin = require('io-spin');
-// const spinner = spin('等待上传中');
-const Slog = require('./core/progress');
 
 const inquirer = require('inquirer'); // 交互式命令行
 

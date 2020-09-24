@@ -24,7 +24,7 @@ class QiniuOss extends FsExtends {
         this.finishList = []; // 上传成功
         this.unfinishList = []; // 上传失败
 
-        this.pb = new Slog(`正在上传至${options.bucket}`, this.fileList.length); // 初始化进度条
+        this.pb = new Slog(`正在上传至${options.bucket}`); // 初始化进度条
 
         // 初始化七牛云所需要的全部凭证
         this.init();

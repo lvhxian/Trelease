@@ -23,7 +23,7 @@ class UPYunOss extends FsExtends {
         this.finishList = []; // 上传成功
         this.unfinishList = []; // 上传失败
 
-        this.pb = new Slog(`正在上传至${options.bucket}`, this.fileList.length); // 初始化进度条
+        this.pb = new Slog(`正在上传至${options.bucket}`); // 初始化进度条
 
         // 初始化七牛云所需要的全部凭证
         this.init();
@@ -48,9 +48,9 @@ class UPYunOss extends FsExtends {
                 const result =  await this.client.putFile(item.key, this.getFileStream(item.localFile)) // 又拍云需要把文件路径转换为Stream流
 
                 result ? this.finishList.push(item) : this.unfinishList.push(item);
-                
-                this.pb.render({ completed: this.finishList.length, total: len }); // 进度条记录
 
+                this.pb.render({ completed: this.finishList.length, total: len }); // 进度条记录
+                
             } catch (err) {
                 log('red', JSON.stringify(err));
                 process.exit(); // 强制退出终端
